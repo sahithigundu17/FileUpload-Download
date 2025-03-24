@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Upload Download</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+      /* General Page Styling */
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          text-align: center;
+          margin: 20px;
+      }
+
+      h1, h2 {
+          color: #333;
+      }
+
+      /* Upload Section */
+      form {
+          background: white;
+          padding: 20px;
+          width: 50%;
+          margin: 20px auto;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+          border-radius: 8px;
+      }
+
+      input[type="file"] {
+          margin-top: 10px;
+      }
+
+      button {
+          background: #007bff;
+          color: white;
+          padding: 8px 12px;
+          border: none;
+          border-radius: 50px;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: 0.3s;
+      }
+
+      button:hover {
+          background: #0056b3;
+      }
+
+      /* Uploaded Files Section */
+      .files-container {
+          background: white;
+          padding: 20px;
+          width: 60%;
+          margin: 20px auto;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+          border-radius: 8px;
+      }
+
+      #fileList {
+          list-style: none;
+          padding: 0;
+      }
+
+      #fileList li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #ffffff;
+          padding: 10px;
+          margin: 5px 0;
+          border-radius: 10px;
+          box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      #fileList a {
+          text-decoration: none;
+          color: #007bff;
+          font-weight: bold;
+      }
+
+      #fileList a:hover {
+          text-decoration: underline;
+      }
+
+      /* Download Icon */
+      .download-icon {
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          margin-left: 10px;
+          transition: transform 0.9s;
+      }
+
+      .download-icon:hover {
+          transform: scale(1.1);
+      }
+  </style>
+</head>
+<body>
+  <h1>Upload a PDF File</h1>
+   <!-- <form action="https://fileupload-pget63o93-sahithis-projects-29e6b2d1.vercel.app/upload" method="POST" enctype="multipart/form-data"> -->
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="pdf" accept=".pdf">
+    <button type="submit">Upload</button>
+  </form>
+
+  <div class="files-container">
+      <h1>Uploaded Files</h1>
+      <h2>You can view and Download files</h2>
+      <ul id="fileList"></ul>
+  </div>
+
+  <script>
+      fetch('/files')
+          .then(response => response.json())
+          .then(files => {
+              const fileList = document.getElementById('fileList');
+              files.forEach(file => {
+                  const listItem = document.createElement('li');
+                  
+                  // Create file name link for viewing the file
+                  const fileLink = document.createElement('a');
+                  fileLink.href = `/files/${file._id}`;
+                  fileLink.textContent = file.name;
+                  listItem.appendChild(fileLink);
+                  
+                  // Create download icon
+                  const downloadIcon = document.createElement('i');
+                  downloadIcon.className = 'fa fa-download download-icon';
+                  downloadIcon.onclick = function () {
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = `/files/${file._id}?download=true`;
+                    downloadLink.download = file.name;
+                    downloadLink.click();
+                };
+                  listItem.appendChild(downloadIcon);
+                  fileList.appendChild(listItem);
+              });
+          })
+          .catch(error => {
+              console.error('Error fetching file list:', error);
+          });
+  </script>
+</body>
+</html>
